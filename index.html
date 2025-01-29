@@ -3,74 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Die Freie Presse</title>
+    <title>Die Freie Presse - Nachrichten</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #1e3a5f; /* Mattes Edelblau */
-            color: #ffffff;
+        * {
             margin: 0;
             padding: 0;
-            text-align: center;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background-color: #f4f4f4;
+            color: #333;
         }
         header {
-            background-color: #14263d;
-            padding: 20px;
-            font-size: 24px;
+            background-color: #b30000;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 26px;
             font-weight: bold;
+            text-transform: uppercase;
         }
         main {
             max-width: 800px;
             margin: 20px auto;
-            background: #2a4d75;
+            background: white;
             padding: 20px;
-            border-radius: 8px;
-            text-align: left;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         h2 {
-            border-bottom: 2px solid #ffffff;
-            padding-bottom: 5px;
+            font-size: 22px;
+            margin-bottom: 10px;
+            border-left: 5px solid #b30000;
+            padding-left: 10px;
         }
         input, textarea {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
-            border: none;
-            border-radius: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 16px;
         }
         button {
-            background-color: #f4a261;
-            color: #000;
+            background-color: #b30000;
+            color: white;
             padding: 10px;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
-            font-weight: bold;
+            font-size: 16px;
+            margin-top: 10px;
+            display: block;
+            width: 100%;
         }
         button:hover {
-            background-color: #e76f51;
+            background-color: #800000;
         }
         .article {
-            background: #3b5f89;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 5px;
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
             position: relative;
         }
         .article h3 {
-            color: #f4a261;
+            font-size: 20px;
+            color: #b30000;
+        }
+        .article p {
+            margin: 5px 0;
+        }
+        .meta {
+            font-size: 12px;
+            color: #777;
         }
         .download-btn {
             position: absolute;
             top: 10px;
             right: 10px;
-            background: #ffffff;
-            color: #000;
+            background: #b30000;
+            color: white;
             padding: 5px;
             font-size: 12px;
             cursor: pointer;
             border-radius: 3px;
+        }
+        .download-btn:hover {
+            background: #800000;
         }
     </style>
 </head>
@@ -80,14 +98,15 @@
 
     <main>
         <section id="news-form">
-            <h2>Neuen Artikel erstellen</h2>
-            <input type="text" id="title" placeholder="Titel eingeben">
+            <h2>Neuen Artikel schreiben</h2>
+            <input type="text" id="title" placeholder="Schlagzeile eingeben">
+            <input type="text" id="author" placeholder="Autor eingeben">
             <textarea id="content" placeholder="Artikeltext eingeben"></textarea>
             <button onclick="addArticle()">Artikel veröffentlichen</button>
         </section>
 
         <section id="news-container">
-            <h2>Aktuelle Artikel</h2>
+            <h2>Aktuelle Nachrichten</h2>
             <div id="articles"></div>
         </section>
     </main>
@@ -97,7 +116,9 @@
 
         function addArticle() {
             let title = document.getElementById("title").value;
+            let author = document.getElementById("author").value || "Unbekannter Autor";
             let content = document.getElementById("content").value;
+            let date = new Date().toLocaleString("de-DE");
 
             if (title.trim() === "" || content.trim() === "") {
                 alert("Bitte Titel und Inhalt eingeben.");
@@ -105,10 +126,11 @@
             }
 
             let articles = JSON.parse(localStorage.getItem("articles")) || [];
-            articles.push({ title, content });
+            articles.push({ title, author, content, date });
             localStorage.setItem("articles", JSON.stringify(articles));
 
             document.getElementById("title").value = "";
+            document.getElementById("author").value = "";
             document.getElementById("content").value = "";
 
             loadArticles();
@@ -127,6 +149,7 @@
 
                 articleElement.innerHTML = `
                     <h3>${article.title}</h3>
+                    <p class="meta">Von <b>${article.author}</b> - ${article.date}</p>
                     <p>${article.content}</p>
                     <button class="download-btn" onclick="downloadArticle(${index})">📥 Download</button>
                 `;
