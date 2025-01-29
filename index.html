@@ -56,6 +56,7 @@
             margin-top: 10px;
             display: block;
             width: 100%;
+            border-radius: 3px;
         }
         button:hover {
             background-color: #800000;
@@ -64,6 +65,7 @@
             border-bottom: 1px solid #ddd;
             padding: 15px 0;
             position: relative;
+            word-wrap: break-word;
         }
         .article h3 {
             font-size: 20px;
@@ -86,9 +88,22 @@
             font-size: 12px;
             cursor: pointer;
             border-radius: 3px;
+            border: none;
         }
         .download-btn:hover {
             background: #800000;
+        }
+        @media (max-width: 850px) {
+            main {
+                width: 95%;
+                padding: 15px;
+            }
+            .download-btn {
+                position: static;
+                display: block;
+                width: 100%;
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
@@ -115,18 +130,18 @@
         document.addEventListener("DOMContentLoaded", loadArticles);
 
         function addArticle() {
-            let title = document.getElementById("title").value;
-            let author = document.getElementById("author").value || "Unbekannter Autor";
-            let content = document.getElementById("content").value;
+            let title = document.getElementById("title").value.trim();
+            let author = document.getElementById("author").value.trim() || "Unbekannter Autor";
+            let content = document.getElementById("content").value.trim();
             let date = new Date().toLocaleString("de-DE");
 
-            if (title.trim() === "" || content.trim() === "") {
+            if (title === "" || content === "") {
                 alert("Bitte Titel und Inhalt eingeben.");
                 return;
             }
 
             let articles = JSON.parse(localStorage.getItem("articles")) || [];
-            articles.push({ title, author, content, date });
+            articles.unshift({ title, author, content, date });
             localStorage.setItem("articles", JSON.stringify(articles));
 
             document.getElementById("title").value = "";
@@ -139,7 +154,6 @@
         function loadArticles() {
             let articles = JSON.parse(localStorage.getItem("articles")) || [];
             let articlesContainer = document.getElementById("articles");
-
             articlesContainer.innerHTML = "";
 
             articles.forEach((article, index) => {
@@ -161,10 +175,10 @@
         function downloadArticle(index) {
             let articleElement = document.getElementById("article-" + index);
 
-            html2canvas(articleElement).then(canvas => {
+            html2canvas(articleElement, { scale: 2 }).then(canvas => {
                 let link = document.createElement("a");
                 link.href = canvas.toDataURL("image/png");
-                link.download = "Artikel.png";
+                link.download = `Artikel_${index + 1}.png`;
                 link.click();
             });
         }
